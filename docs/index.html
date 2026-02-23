@@ -102,7 +102,7 @@
 
         // Fetch existing records when the window is loaded
         window.addEventListener("load", async function () {
-            let response = await fetch('https://yfw-app.herokuapp.com/api/get-records', {
+            let response = await fetch('https://yfw-app-8b703328e3ef.herokuapp.com/api/get-records', {
                 method: 'GET'
             });
 
@@ -113,8 +113,11 @@
                 geojson.features.push({
                     'type': 'Feature',
                     'properties': {
-                        'contributor': data.rows[i].contributor,
-                        'content': data.rows[i].content,
+                        'email': data.rows[i].email,
+                        'name': data.rows[i].name,
+                        'rating': data.rows[i].rating,
+                        'price': data.rows[i].price,
+                        'content': data.rows[i].content
                     },
                     'geometry': {
                         'type': 'Point',
@@ -136,7 +139,7 @@
                 'type': 'circle',
                 'source': 'places',
                 'paint': {
-                    'circle-radius': 6,
+                    'circle-radius': 8,
                     'circle-color': '#B42222'
                 }
             });
@@ -147,12 +150,15 @@
             map.getCanvas().style.cursor = 'pointer';
 
             var coordinates = e.features[0].geometry.coordinates;
+            var name = e.features[0].properties.name;
+            var rating = e.features[0].properties.rating;
+            var price = e.features[0].properties.price;
             var content = e.features[0].properties.content;
-            var contributor = e.features[0].properties.contributor;
+            
 
             popup = new maplibregl.Popup()
                 .setLngLat(coordinates)
-                .setHTML("<p><b>" + contributor + "</b> <i>said:</i> " + content + "</p>")
+                .setHTML("<p><b>" + name + "</b> <i>said:</i> " + content + "</p>" + rating + price)
                 .addTo(map);
         });
 
@@ -169,7 +175,15 @@
             }
 
             // Create the HTML content for the contribution popup
-            const popupContent = '<div id="popup"><input type="text" id="name" placeholder="Input your name here..."><input type="text" id="content" placeholder="Input your message here..."><button id="submit">submit</button></div>';
+            const popupContent = 
+                '<div id="popup">
+                <input type="email" id="email" placeholder="Input your email here (not visible to other users)">
+                <input type="text" id="name" placeholder="Input restaurant name">
+                <input type="number" id="rating" min="1" max="5" placeholder="Rate from 1 to 5">
+                <input type="number" id="price" placeholder="How much did you spend per person">
+                <input type="text" id="content" placeholder="Input your review here"></textarea>
+                <button id="submit">submit</button>
+                </div>';
 
             // Create a new popup and set its content
             popup = new maplibregl.Popup({ closeOnClick: false })
@@ -184,13 +198,19 @@
 
         // Function to handle the submission of a new record
         async function submitNewRecord() {
-            let contributor = document.getElementById('name').value;
-            let content = document.getElementById('content').value;
+            let email = document.getElementById('email').value;
+            let name = document.getElementByID('name').value;
+            let rating = document.getElementById('rating').value;
+            let price = document.getElementByID('price').value
+            let content = document.getElementByID('content).value
             let lngLat = popup.getLngLat();
 
             // Create a new URLSearchParams object and append the data to it
             let newRecord = new URLSearchParams();
-            newRecord.append('contributor', contributor);
+            newRecord.append('email', email);
+            newRecord.append('name', name);
+            newRecord.append('rating', rating);
+            newRecord.append('price', price);
             newRecord.append('content', content);
             newRecord.append('lng', lngLat.lng);
             newRecord.append('lat', lngLat.lat);
@@ -203,7 +223,7 @@
 
             try {
                 // Send the POST request to add the new record
-                await fetch('https://pmap-28a9a9408e2b.herokuapp.com/api/add-record', settings);
+                await fetch('https://yfw-app-8b703328e3ef.herokuapp.com/api/add-record', settings);
             } catch (err) {
                 // Handle any errors that occur during the request
                 console.error(err);
@@ -213,7 +233,10 @@
                 geojson.features.push({
                     'type': 'Feature',
                     'properties': {
-                        'contributor': contributor,
+                        'email': email,
+                        'name': name,
+                        'rating': rating,
+                        'price': price,
                         'content': content,
                     },
                     'geometry': {
