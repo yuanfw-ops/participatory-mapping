@@ -169,14 +169,14 @@
     });
 
     async function submitNewRecord() {
-      const email = document.getElementById("email").value;
-      const name = document.getElementById("name").value;
-      const rating = document.getElementById("rating").value;
-      const price = document.getElementById("price").value;
-      const content = document.getElementById("content").value;
-      const lngLat = popup.getLngLat();
+      let email = document.getElementById("email").value;
+      let name = document.getElementById("name").value;
+      let rating = document.getElementById("rating").value;
+      let price = document.getElementById("price").value;
+      let content = document.getElementById("content").value;
+      let lngLat = popup.getLngLat();
 
-      const newRecord = new URLSearchParams();
+      let newRecord = new URLSearchParams();
       newRecord.append("email", email);
       newRecord.append("name", name);
       newRecord.append("rating", rating);
@@ -185,7 +185,7 @@
       newRecord.append("lng", lngLat.lng);
       newRecord.append("lat", lngLat.lat);
 
-      const settings = { method: "POST", body: newRecord };
+      let settings = { method: "POST", body: newRecord };
 
       try {
         await fetch("https://yfw-app-8b703328e3ef.herokuapp.com/api/add-record", settings);
