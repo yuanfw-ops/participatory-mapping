@@ -5,7 +5,10 @@
 CREATE TABLE IF NOT EXISTS public."tblRecord"
 (
     id  serial primary key,
-    contributor text,
+    email text,
+    name text,
+    rating integer,
+    price integer
     content text COLLATE pg_catalog."default",
     lat double precision,
     lng double precision,
