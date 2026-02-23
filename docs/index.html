@@ -169,45 +169,57 @@
     });
 
     async function submitNewRecord() {
-      let email = document.getElementById("email").value;
-      let name = document.getElementById("name").value;
-      let rating = document.getElementById("rating").value;
-      let price = document.getElementById("price").value;
-      let content = document.getElementById("content").value;
-      let lngLat = popup.getLngLat();
-
-      let newRecord = new URLSearchParams();
-      newRecord.append("email", email);
-      newRecord.append("name", name);
-      newRecord.append("rating", rating);
-      newRecord.append("price", price);
-      newRecord.append("content", content);
-      newRecord.append("lng", lngLat.lng);
-      newRecord.append("lat", lngLat.lat);
-
-      let settings = { method: "POST", body: newRecord };
-
-      try {
-        await fetch("https://yfw-app-8b703328e3ef.herokuapp.com/api/add-record", settings);
-      } catch (err) {
-        console.error("Failed to add record:", err);
-      } finally {
-        if (popup) popup.remove();
-        popup = null;
-
-        geojson.features.push({
-          type: "Feature",
-          properties: { email, name, rating, price, content },
-          geometry: {
-            type: "Point",
-            coordinates: [lngLat.lng, lngLat.lat]
-          }
-        });
-
-        const src = map.getSource("places");
-        if (src) src.setData(geojson);
+    let email = document.getElementById("email").value;
+    let name = document.getElementById("name").value;
+    let rating = document.getElementById("rating").value;
+    let price = document.getElementById("price").value;
+    let content = document.getElementById("content").value;
+    let lngLat = popup.getLngLat();
+  
+    let newRecord = new URLSearchParams();
+    newRecord.append("email", email);
+    newRecord.append("name", name);
+    newRecord.append("rating", rating);
+    newRecord.append("price", price);
+    newRecord.append("content", content);
+    newRecord.append("lng", lngLat.lng);
+    newRecord.append("lat", lngLat.lat);
+  
+    let settings = { method: "POST", body: newRecord };
+  
+    try {
+      const resp = await fetch(
+        "https://yfw-app-8b703328e3ef.herokuapp.com/api/add-record",
+        settings
+      );
+  
+      if (!resp.ok) {
+        const text = await resp.text();
+        console.error("add-record failed:", resp.status, text);
+        alert("Server rejected the submission. Check console/network.");
+        return;
       }
+  
+      if (popup) popup.remove();
+      popup = null;
+  
+      geojson.features.push({
+        type: "Feature",
+        properties: { email, name, rating, price, content },
+        geometry: {
+          type: "Point",
+          coordinates: [lngLat.lng, lngLat.lat]
+        }
+      });
+  
+      const src = map.getSource("places");
+      if (src) src.setData(geojson);
+  
+    } catch (err) {
+      console.error("Failed to add record:", err);
+      alert("Network/server error. Check console.");
     }
+  }
   </script>
 </body>
 </html>
