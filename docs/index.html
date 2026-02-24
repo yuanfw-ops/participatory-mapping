@@ -54,6 +54,10 @@
     
     <!-- JavaScript code for the interactive map and data submission -->
     <script>
+        function randomUserLabel() {
+          return `User ${Math.floor(1000 + Math.random() * 9000)}`;
+        }
+        
         function ratingToStars(rating) {
           if (!rating || isNaN(rating)) return "No rating";
           const r = Math.max(1, Math.min(5, Number(rating)));
@@ -104,7 +108,7 @@
                 geojson.features.push({
                     'type': 'Feature',
                     'properties': {
-                        'email': data.rows[i].email,
+                        'user': randomUserLabel(),
                         'name': data.rows[i].name,
                         'rating': data.rows[i].rating,
                         'price': data.rows[i].price,
@@ -155,7 +159,7 @@
               </div>
               <div style="margin-top:6px;">${p.content}</div>
               <div style="margin-top:8px; font-size:11px; opacity:0.7;">
-                contributed by ${p.email || "anonymous"}
+                contributed by ${p.user}
               </div>
             </div>
           `;
@@ -238,7 +242,7 @@
                 geojson.features.push({
                     'type': 'Feature',
                     'properties': {
-                        'email': email,
+                        'user': randomUserLabel(),
                         'name': name,
                         'rating': rating,
                         'price': price,
