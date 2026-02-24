@@ -54,6 +54,25 @@
     
     <!-- JavaScript code for the interactive map and data submission -->
     <script>
+        function ratingToStars(rating) {
+          if (!rating || isNaN(rating)) return "No rating";
+          const r = Math.max(1, Math.min(5, Number(rating)));
+          return "⭐".repeat(r);
+        }
+        
+        function priceToDollar(price) {
+          if (price === null || price === undefined || price === "" || isNaN(price)) {
+            return "No price";
+          }
+        
+          const p = Number(price);
+        
+          if (p < 20) return "$";
+          if (p >= 20 && p < 50) return "$$";
+          if (p >= 50 && p < 100) return "$$$";
+          return "$$$$";
+        }
+        
         // Variable to hold the popup instance
         let popup = null;
         
@@ -119,20 +138,33 @@
 
         // Show popup on mouse enter over an existing point
         map.on('mouseenter', 'placesLayer', function (e) {
-            map.getCanvas().style.cursor = 'pointer';
-
-            var coordinates = e.features[0].geometry.coordinates;
-            var email = e.features[0].properties.email;
-            var name = e.features[0].properties.name;
-            var rating = e.features[0].properties.rating;
-            var price = e.features[0].properties.price;
-            var content = e.features[0].properties.content;
-          
-            popup = new maplibregl.Popup()
-                .setLngLat(coordinates)
-                .setHTML("<p><b>" + email + "</b> <i>said:</i> " + content + "</p>" + rating + price)
-                .addTo(map);
-        });
+          map.getCanvas().style.cursor = 'pointer';
+        
+          const p = e.features[0].properties;
+          const coords = e.features[0].geometry.coordinates;
+        
+          const stars = ratingToStars(p.rating);
+          const dollars = priceToDollar(p.price);
+        
+          const html = `
+            <div style="min-width:220px;">
+              <div style="font-weight:bold;">${p.name || "Unnamed restaurant"}</div>
+              <div style="margin:4px 0;">
+                <span>${stars}</span>
+                <span style="margin-left:6px;">${dollars}</span>
+              </div>
+              <div style="margin-top:6px;">${p.content}</div>
+              <div style="margin-top:8px; font-size:11px; opacity:0.7;">
+                contributed by ${p.email || "anonymous"}
+              </div>
+            </div>
+          `;
+    
+      popup = new maplibregl.Popup()
+        .setLngLat(coords)
+        .setHTML(html)
+        .addTo(map);
+    });
 
         // Remove popup on mouse leave from an existing point
         map.on('mouseleave', 'placesLayer', function () {
