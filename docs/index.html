@@ -147,16 +147,16 @@
             }
 
             // Create the HTML content for the contribution popup
-            const popupContent = `
-              <div id="popup">
-                <input type="email" id="email" placeholder="Input your email here...">
-                <input type="text" id="name" placeholder="Restaurant name...">
-                <input type="number" id="rating" min="1" max="5" placeholder="Rate 1 to 5">
-                <input type="number" id="price" placeholder="Price per person">
-                <input type="text" id="content" placeholder="Your review...">
-                <button id="submit" type="button">submit</button>
-              </div>
-            `;
+              const popupContent = `
+                <div id="popup">
+                  <input type="email" id="email" placeholder="Input your email here (not visible to other users)">
+                  <input type="text" id="name" placeholder="Input restaurant name">
+                  <input type="number" id="rating" min="1" max="5" placeholder="Rate from 1 to 5">
+                  <input type="number" id="price" placeholder="How much did you spend per person">
+                  <textarea id="content" placeholder="Input your review here"></textarea>
+                  <button id="submit" type="button">submit</button>
+                </div>
+              `;
 
             // Create a new popup and set its content
             popup = new maplibregl.Popup({ closeOnClick: false })
